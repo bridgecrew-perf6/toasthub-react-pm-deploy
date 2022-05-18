@@ -70,48 +70,26 @@ export default function deployReducer(state = {}, action) {
 				// load inputFields
 				let inputFields = {};
 				let prefForms = reducerUtils.getPrefForms(action);
-				for (let i = 0; i < prefForms.PM_DEPLOY_FORM.length; i++) {
-					if (prefForms.PM_DEPLOY_FORM[i].group === "FORM1") {
-						let classModel = JSON.parse(prefForms.PM_DEPLOY_FORM[i].classModel);
-						if (action.responseJson.params.item != null && action.responseJson.params.item[classModel.field] != null) {
-							inputFields[prefForms.PM_DEPLOY_FORM[i].name] = action.responseJson.params.item[classModel.field];
-						} else {
-							let result = "";
-							if (prefForms.PM_DEPLOY_FORM[i].value != null && prefForms.PM_DEPLOY_FORM[i].value != ""){
-								let formValue = JSON.parse(prefForms.PM_DEPLOY_FORM[i].value);
-								if (formValue.options != null) {
-									for (let j = 0; j < formValue.options.length; j++) {
-										if (formValue.options[j] != null && formValue.options[j].defaultInd == true){
-											result = formValue.options[j].value;
-										}
-									}
-								} else if (formValue.referPref != null) {
-									let pref = action.appPrefs.prefTexts[formValue.referPref.prefName][formValue.referPref.prefItem];
-									if (pref != null && pref.value != null && pref.value != "") {
-										let value = JSON.parse(pref.value);
-										if (value.options != null) {
-											for (let j = 0; j < value.options.length; j++) {
-												if (value.options[j] != null && value.options[j].defaultInd == true){
-													result = value.options[j].value;
-												}
-											}
-										}
-									}
-								}
-							}
-							inputFields[prefForms.PM_DEPLOY_FORM[i].name] = result;
-						}
-					}
-				}
+				let form = prefForms.PM_DEPLOY_FORM;
+				
+				inputFields = reducerUtils.loadInputFields(action.responseJson.params.item,form,inputFields,action.appPrefs,"FORM1");
+				
 				// add id if this is existing item
 				if (action.responseJson.params.item != null) {
 					inputFields.itemId = action.responseJson.params.item.id;
+				} else {
+					inputFields.itemId = null;
 				}
+				let view = "MODIFY";
+				if (action.view != null) {
+					view = action.view;
+				}
+				
 				return Object.assign({}, state, {
 					prefForms: Object.assign({}, state.prefForms, reducerUtils.getPrefForms(action)),
 					selected : action.responseJson.params.item,
 					inputFields : inputFields,
-					view: "MODIFY"
+					view: view
 				});
 			} else {
 				return state;
@@ -135,10 +113,8 @@ export default function deployReducer(state = {}, action) {
 		case 'PM_DEPLOY_ORDERBY': { 
 			return reducerUtils.updateOrderBy(state,action);
 		}
-		case 'PM_DEPLOY_SET_ERRORS': {
-			return Object.assign({}, state, {
-				errors: action.errors
-			});
+		case 'PM_DEPLOY_SET_STATUS': {
+			reducerUtils.updateStatus(state,action);
 		}
 		case 'PM_DEPLOY_CLOSE_DELETE_MODAL': {
 			return Object.assign({}, state, {

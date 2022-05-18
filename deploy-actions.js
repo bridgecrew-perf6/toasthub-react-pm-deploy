@@ -119,10 +119,9 @@ export function searchChange({field,value}) {
 export function saveItem({state}) {
 	return function(dispatch) {
 		let requestParams = {};
-	    requestParams.action = "SAVE";
 	    requestParams.service = "PM_DEPLOY_SVC";
 	    requestParams.inputFields = state.inputFields;
-
+		requestParams.action = "SAVE";
 	    let params = {};
 	    params.requestParams = requestParams;
 	    params.URI = '/api/member/callService';
@@ -171,13 +170,13 @@ export function deleteItem({state,id}) {
 	};
 }
 
-
-export function modifyItem({id,appPrefs}) {
+export function modifyItem({id,appPrefs,view}) {
 	return function(dispatch) {
 	    let requestParams = {};
-	    requestParams.action = "ITEM";
 	    requestParams.service = "PM_DEPLOY_SVC";
-	    requestParams.prefFormKeys = new Array("PM_DEPLOY_FORM");
+		requestParams.action = "ITEM";
+		requestParams.prefFormKeys = new Array("PM_DEPLOY_FORM");
+
 	    if (id != null) {
 	    	requestParams.itemId = id;
 	    }
@@ -187,7 +186,7 @@ export function modifyItem({id,appPrefs}) {
 
 	    return callService(params).then( (responseJson) => {
 	    	if (responseJson != null && responseJson.protocalError == null){
-	    		dispatch({ type: 'PM_DEPLOY_ITEM',responseJson,appPrefs});
+	    		dispatch({ type: 'PM_DEPLOY_ITEM',responseJson,appPrefs,view});
 	    	} else {
 	    		actionUtils.checkConnectivity(responseJson,dispatch);
 	    	}
@@ -226,9 +225,9 @@ export function clearField(field) {
 		dispatch({ type:"PM_DEPLOY_CLEAR_FIELD",params});
 	};
 }
-export function setErrors({errors}) {
+export function setStatus({successes,errors}) {
 	 return function(dispatch) {
-		 dispatch({ type:"PM_DEPLOY_SET_ERRORS",errors});
+		 dispatch({ type:"PM_DEPLOY_SET_STATUS",successes,errors});
 	 };
 }
 

@@ -17,7 +17,7 @@
 import React, { useEffect } from 'react';
 import { useSelector, useDispatch } from 'react-redux';
 import { useNavigate } from "react-router-dom";
-import * as actions from './product-actions';
+import * as actions from './deploy-actions';
 import fuLogger from '../../core/common/fu-logger';
 import DeployView from '../../memberView/pm_deploy/deploy-view';
 import DeployModifyView from '../../memberView/pm_deploy/deploy-modify-view';
@@ -54,7 +54,8 @@ function PMDeployContainer() {
 		BaseContainer.onOrderBy({state:itemState,actions:actions,dispatch:dispatch,appPrefs:appPrefs,field,event});
 	}
 	const onSave = () => {
-		BaseContainer.onSave({state:itemState,actions:actions,dispatch:dispatch,appPrefs:appPrefs,form:"PM_PRODUCT_FORM"});
+		let form = "PM_DEPLOY_FORM";
+		BaseContainer.onSave({state:itemState,actions:actions,dispatch:dispatch,appPrefs:appPrefs,form:form});
 	}
 	const closeModal = () => {
 		BaseContainer.closeModal({actions:actions,dispatch:dispatch});
@@ -73,8 +74,12 @@ function PMDeployContainer() {
 		}
 		
 		switch(code) {
-			case 'PROJECT': {
-				navigate('../pm-project',{state:{parent:item,parentType:"PRODUCT"}});
+			case 'SHARE': {
+				navigate('../pm-team',{state:{parent:item,parentType:"DEPLOY"}});
+				break;
+			}
+			case 'BUILD': {
+				//dispatch(actions.modifyItem({id:item.id,appPrefs,view:"SETTINGS"}));
 				break;
 			}
 		}
