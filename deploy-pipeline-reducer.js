@@ -15,9 +15,9 @@
  */
 import reducerUtils from '../../core/common/reducer-utils';
 
-export default function deployReducer(state = {}, action) {
+export default function deployPipelineReducer(state = {}, action) {
 	switch(action.type) {
-		case 'PM_DEPLOY_INIT': {
+		case 'PM_DEPLOY_PIPELINE_INIT': {
 			if (action.responseJson != null && action.responseJson.params != null) {
 				return Object.assign({}, state, {
 					prefTexts: Object.assign({}, state.prefTexts, reducerUtils.getPrefTexts(action)),
@@ -28,13 +28,13 @@ export default function deployReducer(state = {}, action) {
 					items: reducerUtils.getItems(action),
 					listLimit: reducerUtils.getListLimit(action),
 					listStart: reducerUtils.getListStart(action),
-					orderCriteria: [{'orderColumn':'PM_DEPLOY_TABLE_NAME','orderDir':'ASC'}],
-    				searchCriteria: [{'searchValue':'','searchColumn':'PM_DEPLOY_TABLE_NAME'}],
+					orderCriteria: [{'orderColumn':'PM_DEPLOY_PIPELINE_TABLE_NAME','orderDir':'ASC'}],
+    				searchCriteria: [{'searchValue':'','searchColumn':'PM_DEPLOY_PIPELINE_TABLE_NAME'}],
     				paginationSegment: 1,
 					selected: null,
 					inputFields:null,
 					view: "MAIN",
-					pageName:"PMDEPLOY",
+					pageName:"PMDEPLOYPIPELINE",
 					isDeleteModalOpen: false,
 					errors:null, 
 					warns:null, 
@@ -45,7 +45,7 @@ export default function deployReducer(state = {}, action) {
 				return state;
 			}
 		}
-		case 'PM_DEPLOY_LIST': {
+		case 'PM_DEPLOY_PIPELINE_LIST': {
 			if (action.responseJson != null && action.responseJson.params != null) {
 				return Object.assign({}, state, {
 					itemCount: reducerUtils.getItemCount(action),
@@ -65,12 +65,12 @@ export default function deployReducer(state = {}, action) {
 				return state;
 			}
 		}
-		case 'PM_DEPLOY_ITEM': {
+		case 'PM_DEPLOY_PIPELINE_ITEM': {
 			if (action.responseJson !=  null && action.responseJson.params != null) {
 				// load inputFields
 				let inputFields = {};
 				let prefForms = reducerUtils.getPrefForms(action);
-				let form = prefForms.PM_DEPLOY_FORM;
+				let form = prefForms.PM_DEPLOY_PIPELINE_FORM;
 				
 				inputFields = reducerUtils.loadInputFields(action.responseJson.params.item,form,inputFields,action.appPrefs,"FORM1");
 				
@@ -95,57 +95,46 @@ export default function deployReducer(state = {}, action) {
 				return state;
 			}
 		}
-		case 'PM_DEPLOY_INPUT_CHANGE': {
+		case 'PM_DEPLOY_PIPELINE_INPUT_CHANGE': {
 			return reducerUtils.updateInputChange(state,action);
 		}
-		case 'PM_DEPLOY_CLEAR_FIELD': {
+		case 'PM_DEPLOY_PIPELINE_CLEAR_FIELD': {
 			return reducerUtils.updateClearField(state,action);
 		}
-		case 'PM_DEPLOY_LISTLIMIT': {
+		case 'PM_DEPLOY_PIPELINE_LISTLIMIT': {
 			return reducerUtils.updateListLimit(state,action);
 		}
-		case 'PM_DEPLOY_SEARCH': { 
+		case 'PM_DEPLOY_PIPELINE_SEARCH': { 
 			return reducerUtils.updateSearch(state,action);
 		}
-		case 'PM_DEPLOY_SEARCH_CHANGE': { 
+		case 'PM_DEPLOY_PIPELINE_SEARCH_CHANGE': { 
 			return reducerUtils.updateSearchChange(state,action);
 		}
-		case 'PM_DEPLOY_ORDERBY': { 
+		case 'PM_DEPLOY_PIPELINE_ORDERBY': { 
 			return reducerUtils.updateOrderBy(state,action);
 		}
-		case 'PM_DEPLOY_SET_STATUS': {
+		case 'PM_DEPLOY_PIPELINE_SET_STATUS': {
 			reducerUtils.updateStatus(state,action);
 		}
-		case 'PM_DEPLOY_CLOSE_DELETE_MODAL': {
+		case 'PM_DEPLOY_PIPELINE_CLOSE_DELETE_MODAL': {
 			return Object.assign({}, state, {
 				isDeleteModalOpen: false
 			});
 		}
-		case 'PM_DEPLOY_OPEN_DELETE_MODAL': {
+		case 'PM_DEPLOY_PIPELINE_OPEN_DELETE_MODAL': {
 			return Object.assign({}, state, {
 				isDeleteModalOpen: true,
 				selected: action.item
 			});
 		}
-		case 'PM_DEPLOY_CANCEL': {
+		case 'PM_DEPLOY_PIPELINE_CANCEL': {
 			return Object.assign({}, state, {
 				view: "MAIN",
 				selected:null,
 				inputFields:null
 			});
 		}
-		case 'PM_DEPLOY_TEST_SSH': {
-			if (action.responseJson != null && action.responseJson.params != null) {
-				let inputFields = Object.assign({}, state.inputFields);
-				inputFields.sshTest = action.responseJson.params.sshTest;
-				let clone = Object.assign({}, state);
-				clone.inputFields = inputFields;
-				return clone;
-			} else {
-				return state;
-			}
-		}
-		case 'PM_DEPLOY_TEST_SCM': {
+		case 'PM_DEPLOY_PIPELINE_TEST_SCM': {
 			if (action.responseJson != null && action.responseJson.params != null) {
 				let inputFields = Object.assign({}, state.inputFields);
 				inputFields.scmTest = action.responseJson.params.scmTest;
@@ -155,6 +144,36 @@ export default function deployReducer(state = {}, action) {
 			} else {
 				return state;
 			}
+		}
+		case 'PM_DEPLOY_PIPELINE_ADD_PARENT': {
+			if (action.parent != null) {
+				return Object.assign({}, state, {
+					parent: action.parent,
+					parentType: action.parentType
+				});
+			} else {
+		        return state;
+		    }
+		}
+		case 'PM_DEPLOY_PIPELINE_CLEAR_PARENT': {
+			return Object.assign({}, state, {
+				parent: null,
+				parentType: null
+			});
+		}
+		case 'PM_DEPLOY_PIPELINE_MOVE_SELECT': {
+			if (action.item != null) {
+				return Object.assign({}, state, {
+					moveSelectedItem: action.item
+				});
+			} else {
+		        return state;
+		    }
+		}
+		case 'PM_DEPLOY_PIPELINE_MOVE_CANCEL': {
+			return Object.assign({}, state, {
+				moveSelectedItem: null
+			});
 		}
 		default:
 			return state;

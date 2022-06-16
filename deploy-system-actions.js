@@ -24,10 +24,10 @@ import actionUtils from '../../core/common/action-utils';
 export function init({lang}) {
   return function(dispatch) {
     let requestParams = {};
-    requestParams.action = "INIT";
+    requestParams.action = "INIT_SYSTEM";
     requestParams.service = "PM_DEPLOY_SVC";
-    requestParams.prefTextKeys = new Array("PM_DEPLOY_PAGE");
-    requestParams.prefLabelKeys = new Array("PM_DEPLOY_PAGE");
+    requestParams.prefTextKeys = new Array("PM_DEPLOY_SYSTEM_PAGE");
+    requestParams.prefLabelKeys = new Array("PM_DEPLOY_SYSTEM_PAGE");
     requestParams.lang = lang;
     let params = {};
     params.requestParams = requestParams;
@@ -35,7 +35,7 @@ export function init({lang}) {
 
     return callService(params).then( (responseJson) => {
     	if (responseJson != null && responseJson.protocalError == null){
-    		dispatch({ type: "PM_DEPLOY_INIT", responseJson });
+    		dispatch({ type: "PM_DEPLOY_SYSTEM_INIT", responseJson });
 		} else {
 			actionUtils.checkConnectivity(responseJson,dispatch);
 		}
@@ -49,7 +49,7 @@ export function init({lang}) {
 export function list({state,listStart,listLimit,searchCriteria,orderCriteria,info,paginationSegment}) {
 	return function(dispatch) {
 		let requestParams = {};
-		requestParams.action = "LIST";
+		requestParams.action = "LIST_SYSTEM";
 		requestParams.service = "PM_DEPLOY_SVC";
 		if (listStart != null) {
 			requestParams.listStart = listStart;
@@ -72,14 +72,14 @@ export function list({state,listStart,listLimit,searchCriteria,orderCriteria,inf
 			requestParams.orderCriteria = state.orderCriteria;
 		}
 		let userPrefChange = {"page":"users","orderCriteria":requestParams.orderCriteria,"listStart":requestParams.listStart,"listLimit":requestParams.listLimit};
-		dispatch({type:"PM_DEPLOY_PREF_CHANGE", userPrefChange});
+		dispatch({type:"PM_DEPLOY_SYSTEM_PREF_CHANGE", userPrefChange});
 		let params = {};
 		params.requestParams = requestParams;
 		params.URI = '/api/member/callService';
 
 		return callService(params).then( (responseJson) => {
 			if (responseJson != null && responseJson.protocalError == null){
-				dispatch({ type: "PM_DEPLOY_LIST", responseJson, paginationSegment });
+				dispatch({ type: "PM_DEPLOY_SYSTEM_LIST", responseJson, paginationSegment });
 				if (info != null) {
 		        	  dispatch({type:'SHOW_STATUS',info:info});  
 		        }
@@ -95,14 +95,14 @@ export function list({state,listStart,listLimit,searchCriteria,orderCriteria,inf
 
 export function listLimit({state,listLimit}) {
 	return function(dispatch) {
-		 dispatch({ type:"PM_DEPLOY_LISTLIMIT",listLimit});
+		 dispatch({ type:"PM_DEPLOY_SYSTEM_LISTLIMIT",listLimit});
 		 dispatch(list({state,listLimit}));
 	 };
 }
 
 export function search({state,searchCriteria}) {
 	return function(dispatch) {
-		 dispatch({ type:"PM_DEPLOY_SEARCH",searchCriteria});
+		 dispatch({ type:"PM_DEPLOY_SYSTEM_SEARCH",searchCriteria});
 		 dispatch(list({state,searchCriteria,listStart:0}));
 	 };
 }
@@ -112,7 +112,7 @@ export function searchChange({field,value}) {
 		 let params = {};
 		 params.field = field;
 		 params.value = value;
-		 dispatch({ type:"PM_DEPLOY_SEARCH_CHANGE",params});
+		 dispatch({ type:"PM_DEPLOY_SYSTEM_SEARCH_CHANGE",params});
 	 };
 }
 
@@ -121,7 +121,7 @@ export function saveItem({state}) {
 		let requestParams = {};
 	    requestParams.service = "PM_DEPLOY_SVC";
 	    requestParams.inputFields = state.inputFields;
-		requestParams.action = "SAVE";
+		requestParams.action = "SAVE_SYSTEM";
 	    let params = {};
 	    params.requestParams = requestParams;
 	    params.URI = '/api/member/callService';
@@ -146,7 +146,7 @@ export function saveItem({state}) {
 export function deleteItem({state,id}) {
 	return function(dispatch) {
 	    let requestParams = {};
-	    requestParams.action = "DELETE";
+	    requestParams.action = "DELETE_SYSTEM";
 	    requestParams.service = "PM_DEPLOY_SVC";
 	    requestParams.itemId = id;
 	    
@@ -174,8 +174,8 @@ export function modifyItem({id,appPrefs,view}) {
 	return function(dispatch) {
 	    let requestParams = {};
 	    requestParams.service = "PM_DEPLOY_SVC";
-		requestParams.action = "ITEM";
-		requestParams.prefFormKeys = new Array("PM_DEPLOY_FORM");
+		requestParams.action = "ITEM_SYSTEM";
+		requestParams.prefFormKeys = new Array("PM_DEPLOY_SYSTEM_FORM");
 
 	    if (id != null) {
 	    	requestParams.itemId = id;
@@ -186,7 +186,7 @@ export function modifyItem({id,appPrefs,view}) {
 
 	    return callService(params).then( (responseJson) => {
 	    	if (responseJson != null && responseJson.protocalError == null){
-	    		dispatch({ type: 'PM_DEPLOY_ITEM',responseJson,appPrefs,view});
+	    		dispatch({ type: 'PM_DEPLOY_SYSTEM_ITEM',responseJson,appPrefs,view});
 	    	} else {
 	    		actionUtils.checkConnectivity(responseJson,dispatch);
 	    	}
@@ -201,20 +201,20 @@ export function inputChange(field,value) {
 		 let params = {};
 		 params.field = field;
 		 params.value = value;
-		 dispatch({ type:"PM_DEPLOY_INPUT_CHANGE",params});
+		 dispatch({ type:"PM_DEPLOY_SYSTEM_INPUT_CHANGE",params});
 	 };
 }
 
 export function orderBy({state,orderCriteria}) {
 	 return function(dispatch) {
-		 dispatch({ type:"PM_DEPLOY_ORDERBY",orderCriteria});
+		 dispatch({ type:"PM_DEPLOY_SYSTEM_ORDERBY",orderCriteria});
 		 dispatch(list({state,orderCriteria}));
 	 };
 }
 
 export function clearItem() {
 	return function(dispatch) {
-		dispatch({ type:"PM_DEPLOY_CLEAR_ITEM"});
+		dispatch({ type:"PM_DEPLOY_SYSTEM_CLEAR_ITEM"});
 	};
 }
 
@@ -222,30 +222,30 @@ export function clearField(field) {
 	return function(dispatch) {
 		let params = {};
 		 params.field = field;
-		dispatch({ type:"PM_DEPLOY_CLEAR_FIELD",params});
+		dispatch({ type:"PM_DEPLOY_SYSTEM_CLEAR_FIELD",params});
 	};
 }
 export function setStatus({successes,errors}) {
 	 return function(dispatch) {
-		 dispatch({ type:"PM_DEPLOY_SET_STATUS",successes,errors});
+		 dispatch({ type:"PM_DEPLOY_SYSTEM_SET_STATUS",successes,errors});
 	 };
 }
 
 export function openDeleteModal({item}) {
 	 return function(dispatch) {
-		 dispatch({type:"PM_DEPLOY_OPEN_DELETE_MODAL",item});
+		 dispatch({type:"PM_DEPLOY_SYSTEM_OPEN_DELETE_MODAL",item});
 	 };
 }
 
 export function closeDeleteModal() {
 	 return function(dispatch) {
-		 dispatch({type:"PM_DEPLOY_CLOSE_DELETE_MODAL"});
+		 dispatch({type:"PM_DEPLOY_SYSTEM_CLOSE_DELETE_MODAL"});
 	 };
 }
 
 export function cancel({state}) {
 	return function(dispatch) {
-		dispatch({type:"PM_DEPLOY_CANCEL"});
+		dispatch({type:"PM_DEPLOY_SYSTEM_CANCEL"});
 		dispatch(list({state}));
 	 };
 }
@@ -255,9 +255,9 @@ export function testSSH({state}) {
 	    let requestParams = {};
 	    requestParams.action = "TESTSSH";
 	    requestParams.service = "PM_DEPLOY_SVC";
-	    requestParams.sshServer = state.inputFields.PM_DEPLOY_FORM_SERVER_NAME;
-	    requestParams.sshUser = state.inputFields.PM_DEPLOY_FORM_SSH_USERNAME;
-	    requestParams.sshPassword = state.inputFields.PM_DEPLOY_FORM_SSH_PASSPHRASE;
+	    requestParams.sshServer = state.inputFields.PM_DEPLOY_SYSTEM_FORM_SERVER_NAME;
+	    requestParams.sshUser = state.inputFields.PM_DEPLOY_SYSTEM_FORM_SSH_USERNAME;
+	    requestParams.sshPassword = state.inputFields.PM_DEPLOY_SYSTEM_FORM_SSH_PASSPHRASE;
 	    
 	    let params = {};
 	    params.requestParams = requestParams;
@@ -266,36 +266,7 @@ export function testSSH({state}) {
 	    return callService(params).then( (responseJson) => {
 	    	if (responseJson != null && responseJson.protocalError == null){
 	    		if(responseJson != null && responseJson.status != null && responseJson.status == "SUCCESS"){
-	    			dispatch({ type: 'PM_DEPLOY_TEST_SSH',responseJson});
-	    		} else if (responseJson != null && responseJson.status != null && responseJson.status == "ACTIONFAILED") {
-	    			dispatch({type:'SHOW_STATUS',warn:responseJson.errors});
-	    		}
-	    	} else {
-	    		actionUtils.checkConnectivity(responseJson,dispatch);
-	    	}
-	    }).catch(error => {
-	    	throw(error);
-	    });
-	};
-}
-
-export function testSCM({state}) {
-	return function(dispatch) {
-	    let requestParams = {};
-	    requestParams.action = "TESTSCM";
-	    requestParams.service = "PM_DEPLOY_SVC";
-	    requestParams.scmServer = state.inputFields.PM_DEPLOY_FORM_SCM_URL;
-	    requestParams.scmUser = state.inputFields.PM_DEPLOY_FORM_SCM_USER;
-	    requestParams.scmPassword = state.inputFields.PM_DEPLOY_FORM_SCM_PASSWORD;
-	    
-	    let params = {};
-	    params.requestParams = requestParams;
-	    params.URI = '/api/member/callService';
-
-	    return callService(params).then( (responseJson) => {
-	    	if (responseJson != null && responseJson.protocalError == null){
-	    		if(responseJson != null && responseJson.status != null && responseJson.status == "SUCCESS"){
-	    			dispatch({ type: 'PM_DEPLOY_TEST_SCM',responseJson});
+	    			dispatch({ type: 'PM_DEPLOY_SYSTEM_TEST_SSH',responseJson});
 	    		} else if (responseJson != null && responseJson.status != null && responseJson.status == "ACTIONFAILED") {
 	    			dispatch({type:'SHOW_STATUS',warn:responseJson.errors});
 	    		}

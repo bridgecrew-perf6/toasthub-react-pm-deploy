@@ -17,15 +17,15 @@
 import React, { useEffect } from 'react';
 import { useSelector, useDispatch } from 'react-redux';
 import { useNavigate } from "react-router-dom";
-import * as actions from './deploy-actions';
+import * as actions from './deploy-system-actions';
 import fuLogger from '../../core/common/fu-logger';
-import DeployView from '../../memberView/pm_deploy/deploy-view';
-import DeployModifyView from '../../memberView/pm_deploy/deploy-modify-view';
+import DeploySystemView from '../../memberView/pm_deploy/deploy-system-view';
+import DeploySystemModifyView from '../../memberView/pm_deploy/deploy-system-modify-view';
 import BaseContainer from '../../core/container/base-container';
 
 
-function PMDeployContainer() {
-	const itemState = useSelector((state) => state.pmdeploy);
+export default function PMDeploySystemContainer() {
+	const itemState = useSelector((state) => state.pmdeploysystem);
 	const session = useSelector((state) => state.session);
 	const appPrefs = useSelector((state) => state.appPrefs);
 	const dispatch = useDispatch();
@@ -54,7 +54,7 @@ function PMDeployContainer() {
 		BaseContainer.onOrderBy({state:itemState,actions:actions,dispatch:dispatch,appPrefs:appPrefs,field,event});
 	}
 	const onSave = () => {
-		let form = "PM_DEPLOY_FORM";
+		let form = "PM_DEPLOY_SYSTEM_FORM";
 		BaseContainer.onSave({state:itemState,actions:actions,dispatch:dispatch,appPrefs:appPrefs,form:form});
 	}
 	const closeModal = () => {
@@ -68,7 +68,7 @@ function PMDeployContainer() {
 	}
 	
 	const onOption = (code,item) => {
-		fuLogger.log({level:'TRACE',loc:'DeployContainer::onOption',msg:" code "+code});
+		fuLogger.log({level:'TRACE',loc:'DeploySystemContainer::onOption',msg:" code "+code});
 		if (BaseContainer.onOptionBase({state:itemState,actions:actions,dispatch:dispatch,code:code,appPrefs:appPrefs,item:item})) {
 			return;
 		}
@@ -76,14 +76,6 @@ function PMDeployContainer() {
 		switch(code) {
 			case 'SHARE': {
 				navigate('../pm-team',{state:{parent:item,parentType:"DEPLOY"}});
-				break;
-			}
-			case 'PIPELINE': {
-				navigate('../pm-deploypipeline',{state:{parent:item,parentType:"DEPLOY"}});
-				break;
-			}
-			case 'SYSTEM': {
-				navigate('../pm-deploysystem',{state:{parent:item,parentType:"DEPLOY"}});
 				break;
 			}
 			case 'BUILD': {
@@ -94,23 +86,19 @@ function PMDeployContainer() {
 	}
 	
 	const onClick = (code) => {
-		fuLogger.log({level:'TRACE',loc:'DeployContainer::onClick',msg:" code "+code});
+		fuLogger.log({level:'TRACE',loc:'DeploySystemContainer::onClick',msg:" code "+code});
 		switch(code) {
 			case 'TESTSSH': {
 				dispatch(actions.testSSH({state:itemState}));
 				break;
 			}
-			case 'TESTSCM': {
-				dispatch(actions.testSCM({state:itemState}));
-				break;
-			}
 		}
 	}
 
-	fuLogger.log({level:'TRACE',loc:'DeployContainer::render',msg:"Hi there"});
+	fuLogger.log({level:'TRACE',loc:'DeploySystemContainer::render',msg:"Hi there"});
 	if (itemState.view == "MODIFY") {
 		return (
-			<DeployModifyView
+			<DeploySystemModifyView
 			itemState={itemState}
 			appPrefs={appPrefs}
 			onSave={onSave}
@@ -121,7 +109,7 @@ function PMDeployContainer() {
 		);
 	} else if (itemState.view == "MAIN" && itemState.items != null) {
 		return (
-			<DeployView
+			<DeploySystemView
 			itemState={itemState}
 			appPrefs={appPrefs}
 			onListLimitChange={onListLimitChange}
@@ -140,4 +128,3 @@ function PMDeployContainer() {
 	}
 }
 
-export default PMDeployContainer;

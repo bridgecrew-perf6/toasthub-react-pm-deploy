@@ -17,15 +17,15 @@
 import React, { useEffect } from 'react';
 import { useSelector, useDispatch } from 'react-redux';
 import { useNavigate } from "react-router-dom";
-import * as actions from './deploy-actions';
+import * as actions from './deploy-pipeline-actions';
 import fuLogger from '../../core/common/fu-logger';
-import DeployView from '../../memberView/pm_deploy/deploy-view';
-import DeployModifyView from '../../memberView/pm_deploy/deploy-modify-view';
+import DeployPipelineView from '../../memberView/pm_deploy/deploy-pipeline-view';
+import DeployPipelineModifyView from '../../memberView/pm_deploy/deploy-pipeline-modify-view';
 import BaseContainer from '../../core/container/base-container';
 
 
-function PMDeployContainer() {
-	const itemState = useSelector((state) => state.pmdeploy);
+export default function PMDeployPipelineContainer() {
+	const itemState = useSelector((state) => state.pmdeploypipeline);
 	const session = useSelector((state) => state.session);
 	const appPrefs = useSelector((state) => state.appPrefs);
 	const dispatch = useDispatch();
@@ -54,7 +54,7 @@ function PMDeployContainer() {
 		BaseContainer.onOrderBy({state:itemState,actions:actions,dispatch:dispatch,appPrefs:appPrefs,field,event});
 	}
 	const onSave = () => {
-		let form = "PM_DEPLOY_FORM";
+		let form = "PM_DEPLOY_PIPELINE_FORM";
 		BaseContainer.onSave({state:itemState,actions:actions,dispatch:dispatch,appPrefs:appPrefs,form:form});
 	}
 	const closeModal = () => {
@@ -67,39 +67,54 @@ function PMDeployContainer() {
 		BaseContainer.onCancel({state:itemState,actions:actions,dispatch:dispatch,field});
 	}
 	
+	const onMoveSelect = (item) => {
+		fuLogger.log({level:'TRACE',loc:'DeployPipelineContainer::onMoveSelect',msg:"test"});
+		if (item != null) {
+			dispatch(actions.moveSelect({state:itemState,item}));
+		}
+	}
+	
+	const onMoveSave = (code,item) => {
+		fuLogger.log({level:'TRACE',loc:'DeployPipelineContainer::onMoveSave',msg:"test"});
+		if (item != null) {
+			dispatch(actions.moveSave({state:itemState,code,item}));
+		}
+	}
+	
+	const onMoveCancel = () => {
+		fuLogger.log({level:'TRACE',loc:'DeployPipelineContainer::onMoveCancel',msg:"test"});
+		dispatch(actions.moveCancel({state:itemState}));
+	}
+	
 	const onOption = (code,item) => {
-		fuLogger.log({level:'TRACE',loc:'DeployContainer::onOption',msg:" code "+code});
+		fuLogger.log({level:'TRACE',loc:'DeployPipelineContainer::onOption',msg:" code "+code});
 		if (BaseContainer.onOptionBase({state:itemState,actions:actions,dispatch:dispatch,code:code,appPrefs:appPrefs,item:item})) {
 			return;
 		}
 		
 		switch(code) {
-			case 'SHARE': {
-				navigate('../pm-team',{state:{parent:item,parentType:"DEPLOY"}});
+			case 'MOVESELECT': {
+				onMoveSelect(item);
 				break;
 			}
-			case 'PIPELINE': {
-				navigate('../pm-deploypipeline',{state:{parent:item,parentType:"DEPLOY"}});
+			case 'MOVEABOVE': {
+				onMoveSave(code,item);
 				break;
 			}
-			case 'SYSTEM': {
-				navigate('../pm-deploysystem',{state:{parent:item,parentType:"DEPLOY"}});
+			case 'MOVEBELOW': {
+				onMoveSave(code,item);
 				break;
 			}
-			case 'BUILD': {
-				//dispatch(actions.modifyItem({id:item.id,appPrefs,view:"SETTINGS"}));
+			case 'MOVECANCEL': {
+				onMoveCancel();
 				break;
 			}
 		}
 	}
 	
 	const onClick = (code) => {
-		fuLogger.log({level:'TRACE',loc:'DeployContainer::onClick',msg:" code "+code});
+		fuLogger.log({level:'TRACE',loc:'DeployPipelineContainer::onClick',msg:" code "+code});
 		switch(code) {
-			case 'TESTSSH': {
-				dispatch(actions.testSSH({state:itemState}));
-				break;
-			}
 			case 'TESTSCM': {
 				dispatch(actions.testSCM({state:itemState}));
 				break;
@@ -107,10 +122,10 @@ function PMDeployContainer() {
 		}
 	}
 
-	fuLogger.log({level:'TRACE',loc:'DeployContainer::render',msg:"Hi there"});
+	fuLogger.log({level:'TRACE',loc:'DeployPipelineContainer::render',msg:"Hi there"});
 	if (itemState.view == "MODIFY") {
 		return (
-			<DeployModifyView
+			<DeployPipelineModifyView
 			itemState={itemState}
 			appPrefs={appPrefs}
 			onSave={onSave}
@@ -121,7 +136,7 @@ function PMDeployContainer() {
 		);
 	} else if (itemState.view == "MAIN" && itemState.items != null) {
 		return (
-			<DeployView
+			<DeployPipelineView
 			itemState={itemState}
 			appPrefs={appPrefs}
 			onListLimitChange={onListLimitChange}
@@ -139,5 +154,3 @@ function PMDeployContainer() {
 		return (<div> Loading... </div>);
 	}
 }
-
-export default PMDeployContainer;
