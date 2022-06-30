@@ -16,7 +16,6 @@
 'use-strict';
 import React, { useEffect } from 'react';
 import { useSelector, useDispatch } from 'react-redux';
-import { useNavigate } from "react-router-dom";
 import * as actions from './deploy-system-actions';
 import fuLogger from '../../core/common/fu-logger';
 import DeploySystemView from '../../memberView/pm_deploy/deploy-system-view';
@@ -24,15 +23,18 @@ import DeploySystemModifyView from '../../memberView/pm_deploy/deploy-system-mod
 import BaseContainer from '../../core/container/base-container';
 
 
-export default function PMDeploySystemContainer() {
+export default function PMDeploySystemContainer({navigate,location}) {
 	const itemState = useSelector((state) => state.pmdeploysystem);
 	const session = useSelector((state) => state.session);
 	const appPrefs = useSelector((state) => state.appPrefs);
 	const dispatch = useDispatch();
-	const navigate = useNavigate();
 
 	useEffect(() => {
-		dispatch(actions.init({lang:session.selected.lang}));
+		if (location.state != null && location.state.parent != null) {
+			dispatch(actions.init({lang:session.selected.lang,parent:location.state.parent,parentType:location.state.parentType}));
+		} else {
+			dispatch(actions.init({}));
+		}
 	}, []);
 	
 	const onListLimitChange = (fieldName,event) => {
@@ -63,6 +65,9 @@ export default function PMDeploySystemContainer() {
 	const onCancel = () => {
 		BaseContainer.onCancel({state:itemState,actions:actions,dispatch:dispatch});
 	}
+	const goBack = () => {
+		BaseContainer.goBack({navigate});
+	}
 	const onBlur = (field) => {
 		BaseContainer.onCancel({state:itemState,actions:actions,dispatch:dispatch,field});
 	}
@@ -75,7 +80,7 @@ export default function PMDeploySystemContainer() {
 		
 		switch(code) {
 			case 'SHARE': {
-				navigate('../pm-team',{state:{parent:item,parentType:"DEPLOY"}});
+				navigate('/member/pm-team',{state:{parent:item,parentType:"DEPLOY"}});
 				break;
 			}
 			case 'BUILD': {
@@ -120,6 +125,7 @@ export default function PMDeploySystemContainer() {
 			closeModal={closeModal}
 			onOption={onOption}
 			inputChange={inputChange}
+			goBack={goBack}
 			session={session}
 			/>
 		);

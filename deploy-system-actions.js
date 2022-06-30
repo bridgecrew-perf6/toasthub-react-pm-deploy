@@ -21,7 +21,7 @@ import actionUtils from '../../core/common/action-utils';
 
 
 // thunks
-export function init({lang}) {
+export function init({parent,parentType,lang}) {
   return function(dispatch) {
     let requestParams = {};
     requestParams.action = "INIT_SYSTEM";
@@ -29,6 +29,14 @@ export function init({lang}) {
     requestParams.prefTextKeys = new Array("PM_DEPLOY_SYSTEM_PAGE");
     requestParams.prefLabelKeys = new Array("PM_DEPLOY_SYSTEM_PAGE");
     requestParams.lang = lang;
+    if (parent != null) {
+    	if (parentType != null && parentType === "DEPLOY") {
+    		requestParams.deployId = parent.id;
+    	}
+		dispatch({type:"PM_DEPLOY_SYSTEM_ADD_PARENT", parent, parentType});
+	} else {
+		dispatch({type:"PM_DEPLOY_SYSTEM_CLEAR_PARENT"});
+	}
     let params = {};
     params.requestParams = requestParams;
     params.URI = '/api/member/callService';
@@ -70,6 +78,9 @@ export function list({state,listStart,listLimit,searchCriteria,orderCriteria,inf
 			requestParams.orderCriteria = orderCriteria;
 		} else {
 			requestParams.orderCriteria = state.orderCriteria;
+		}
+		if (state.parent != null && state.parentType != null && state.parentType === "DEPLOY") {
+			requestParams.deployId = state.parent.id;
 		}
 		let userPrefChange = {"page":"users","orderCriteria":requestParams.orderCriteria,"listStart":requestParams.listStart,"listLimit":requestParams.listLimit};
 		dispatch({type:"PM_DEPLOY_SYSTEM_PREF_CHANGE", userPrefChange});
@@ -119,9 +130,12 @@ export function searchChange({field,value}) {
 export function saveItem({state}) {
 	return function(dispatch) {
 		let requestParams = {};
+		requestParams.action = "SAVE_SYSTEM";
 	    requestParams.service = "PM_DEPLOY_SVC";
 	    requestParams.inputFields = state.inputFields;
-		requestParams.action = "SAVE_SYSTEM";
+		if (state.parent != null && state.parentType != null && state.parentType === "DEPLOY") {
+			requestParams.deployId = state.parent.id;
+		}
 	    let params = {};
 	    params.requestParams = requestParams;
 	    params.URI = '/api/member/callService';

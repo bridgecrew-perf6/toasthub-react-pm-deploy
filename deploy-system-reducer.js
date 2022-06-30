@@ -145,6 +145,22 @@ export default function deploySystemReducer(state = {}, action) {
 				return state;
 			}
 		}
+		case 'PM_DEPLOY_SYSTEM_ADD_PARENT': {
+			if (action.parent != null) {
+				return Object.assign({}, state, {
+					parent: action.parent,
+					parentType: action.parentType
+				});
+			} else {
+		        return state;
+		    }
+		}
+		case 'PM_DEPLOY_SYSTEM_CLEAR_PARENT': {
+			return Object.assign({}, state, {
+				parent: null,
+				parentType: null
+			});
+		}
 		default:
 			return state;
 	}

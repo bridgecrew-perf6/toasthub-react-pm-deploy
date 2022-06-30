@@ -16,7 +16,6 @@
 'use-strict';
 import React, { useEffect } from 'react';
 import { useSelector, useDispatch } from 'react-redux';
-import { useNavigate } from "react-router-dom";
 import * as actions from './deploy-actions';
 import fuLogger from '../../core/common/fu-logger';
 import DeployView from '../../memberView/pm_deploy/deploy-view';
@@ -24,12 +23,11 @@ import DeployModifyView from '../../memberView/pm_deploy/deploy-modify-view';
 import BaseContainer from '../../core/container/base-container';
 
 
-function PMDeployContainer() {
+export default function PMDeployContainer({navigate,location}) {
 	const itemState = useSelector((state) => state.pmdeploy);
 	const session = useSelector((state) => state.session);
 	const appPrefs = useSelector((state) => state.appPrefs);
 	const dispatch = useDispatch();
-	const navigate = useNavigate();
 
 	useEffect(() => {
 		dispatch(actions.init({lang:session.selected.lang}));
@@ -75,15 +73,15 @@ function PMDeployContainer() {
 		
 		switch(code) {
 			case 'SHARE': {
-				navigate('../pm-team',{state:{parent:item,parentType:"DEPLOY"}});
+				navigate('/member/pm-team',{state:{parent:item,parentType:"DEPLOY"}});
 				break;
 			}
 			case 'PIPELINE': {
-				navigate('../pm-deploypipeline',{state:{parent:item,parentType:"DEPLOY"}});
+				navigate('/member/pm-deploy/pm-deploypipeline',{state:{parent:item,parentType:"DEPLOY"}});
 				break;
 			}
 			case 'SYSTEM': {
-				navigate('../pm-deploysystem',{state:{parent:item,parentType:"DEPLOY"}});
+				navigate('/member/pm-deploy/pm-deploysystem',{state:{parent:item,parentType:"DEPLOY"}});
 				break;
 			}
 			case 'BUILD': {
@@ -140,4 +138,3 @@ function PMDeployContainer() {
 	}
 }
 
-export default PMDeployContainer;

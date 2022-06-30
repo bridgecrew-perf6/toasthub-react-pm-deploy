@@ -16,7 +16,6 @@
 'use-strict';
 import React, { useEffect } from 'react';
 import { useSelector, useDispatch } from 'react-redux';
-import { useNavigate } from "react-router-dom";
 import * as actions from './deploy-pipeline-actions';
 import fuLogger from '../../core/common/fu-logger';
 import DeployPipelineView from '../../memberView/pm_deploy/deploy-pipeline-view';
@@ -24,15 +23,18 @@ import DeployPipelineModifyView from '../../memberView/pm_deploy/deploy-pipeline
 import BaseContainer from '../../core/container/base-container';
 
 
-export default function PMDeployPipelineContainer() {
+export default function PMDeployPipelineContainer({navigate,location}) {
 	const itemState = useSelector((state) => state.pmdeploypipeline);
 	const session = useSelector((state) => state.session);
 	const appPrefs = useSelector((state) => state.appPrefs);
 	const dispatch = useDispatch();
-	const navigate = useNavigate();
 
 	useEffect(() => {
-		dispatch(actions.init({lang:session.selected.lang}));
+		if (location.state != null && location.state.parent != null) {
+			dispatch(actions.init({lang:session.selected.lang,parent:location.state.parent,parentType:location.state.parentType}));
+		} else {
+			dispatch(actions.init({}));
+		}
 	}, []);
 	
 	const onListLimitChange = (fieldName,event) => {
@@ -62,6 +64,9 @@ export default function PMDeployPipelineContainer() {
 	}
 	const onCancel = () => {
 		BaseContainer.onCancel({state:itemState,actions:actions,dispatch:dispatch});
+	}
+	const goBack = () => {
+		BaseContainer.goBack({navigate});
 	}
 	const onBlur = (field) => {
 		BaseContainer.onCancel({state:itemState,actions:actions,dispatch:dispatch,field});
@@ -147,6 +152,7 @@ export default function PMDeployPipelineContainer() {
 			closeModal={closeModal}
 			onOption={onOption}
 			inputChange={inputChange}
+			goBack={goBack}
 			session={session}
 			/>
 		);
